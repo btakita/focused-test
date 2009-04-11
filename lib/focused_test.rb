@@ -74,8 +74,6 @@ class FocusedTest
     current_method = nil
 
     content = IO.read(@file_path)
-#ActionController::IntegrationTest
-#Test::Unit::TestCase
     if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
       run_test content
     else
