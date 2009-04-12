@@ -2,6 +2,12 @@
 require 'optparse'
 
 class FocusedTest
+  class << self
+    def run(args)
+      new(args).run
+    end
+  end
+
   def initialize(args)
     parse args
   end
@@ -84,5 +90,5 @@ class FocusedTest
 end
 
 if $0 == __FILE__
-  FocusedTest.new(ARGV).run
+  FocusedTest.run(ARGV)
 end
