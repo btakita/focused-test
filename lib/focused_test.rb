@@ -50,7 +50,7 @@ class FocusedTest
         @drb = true
       end
     end
-    options.order(ARGV)
+    options.order(args)
   end
 
   def run_test(content)
