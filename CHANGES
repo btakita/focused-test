@@ -1,3 +1,6 @@
+0.1.2
+FocusedTest.run and FocusedTest.new now take a splatted array.
+
 0.1.1
 FocusedTest#parse properly uses args local variable instead of using ARGV.
 
