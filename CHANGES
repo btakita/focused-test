@@ -1,1 +1,5 @@
+0.1.1
+FocusedTest#parse properly uses args local variable instead of using ARGV.
+
+0.1.0
 Initial Release
