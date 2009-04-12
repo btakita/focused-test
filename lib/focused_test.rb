@@ -6,6 +6,19 @@ class FocusedTest
     parse args
   end
 
+  def run
+    test_type = nil
+    current_method = nil
+
+    content = IO.read(@file_path)
+    if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
+      run_test content
+    else
+      run_example
+    end
+  end
+
+  protected
   def parse(args)
     @file_path = nil
     @line_number = 0
@@ -40,7 +53,7 @@ class FocusedTest
 
     content.split("\n").each do |line|
       break if current_line > @line_number
-      if /def +(test_[A-Za-z_!?]*)/ =~ line
+      if /def +(test_[A-Za-z0-9_!?]*)/ =~ line
         current_method = Regexp.last_match(1)
       end
       current_line += 1
@@ -68,21 +81,8 @@ class FocusedTest
     cmd << ' --drb' if @drb
     system cmd
   end
-
-  def run
-    test_type = nil
-    current_method = nil
-
-    content = IO.read(@file_path)
-    if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
-      run_test content
-    else
-      run_example
-    end
-  end
 end
 
 if $0 == __FILE__
   FocusedTest.new(ARGV).run
 end
-
