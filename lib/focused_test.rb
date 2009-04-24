@@ -27,7 +27,7 @@ class FocusedTest
   protected
   def parse(args)
     @file_path = nil
-    @line_number = 0
+    @line_number = nil
     @rspec_version = ""
     @show_backtrace = false
     options = OptionParser.new do |o|
@@ -57,17 +57,22 @@ class FocusedTest
     current_line = 0
     current_method = nil
 
-    content.split("\n").each do |line|
-      break if current_line > @line_number
-      if /def +(test_[A-Za-z0-9_!?]*)/ =~ line
-        current_method = Regexp.last_match(1)
-      end
-      current_line += 1
-    end
-
     require @file_path
-    runner = Test::Unit::AutoRunner.new(false) do |runner|
-      runner.filters << proc{|t| current_method == t.method_name ? true : false}
+    runner = nil
+    if @line_number
+      content.split("\n").each do |line|
+        break if current_line > @line_number
+        if /def +(test_[A-Za-z0-9_!?]*)/ =~ line
+          current_method = Regexp.last_match(1)
+        end
+        current_line += 1
+      end
+
+      runner = Test::Unit::AutoRunner.new(false) do |runner|
+        runner.filters << proc{|t| current_method == t.method_name ? true : false}
+      end
+    else
+      runner = Test::Unit::AutoRunner.new(false)
     end
     runner.run
     puts "Running '#{current_method}' in file #{@file_path}"
@@ -82,7 +87,8 @@ class FocusedTest
       end
     end
     cmd = (RUBY_PLATFORM =~ /[^r]win/) ? "spec.cmd" : "spec" unless cmd
-    cmd << "#{@rspec_version} --line #{@line_number} #{@file_path}"
+    cmd << "#{@rspec_version} #{@file_path}"
+    cmd << " --line #{@line_number}" if @line_number
     cmd << ' --backtrace' if @show_backtrace
     cmd << ' --drb' if @drb
     system cmd
