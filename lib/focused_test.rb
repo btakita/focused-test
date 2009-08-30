@@ -79,7 +79,7 @@ class FocusedTest
       runner = Test::Unit::AutoRunner.new(false)
     end
     runner.run
-    puts "Running '#{current_method}' in file #{@file_path}"
+    puts "Running '#{current_method}' in file #{@file_path}" unless current_method.nil?
   end
 
 
@@ -90,23 +90,29 @@ class FocusedTest
 
     require @file_path
 
-    should, context = nil, nil
-
-    lines     = content.split("\n")[0...@line_number].reverse
+    should, context, description = '', '', ''
+    
+    content   = content.split("\n")
+    lines     = content[0...@line_number].reverse
     context   = lines.find { |line| line =~ /^\s*context\b/ }
-    should    = parse_from_quotes(lines.find { |line| line =~ /^\s*should\b/ })
 
-    if !context.empty? && !should.empty?
+    unless content[@line_number - 1] =~ /^\s*context\b/
+      should = parse_from_quotes(lines.find { |line| line =~ /^\s*should\b/ })
+    end
+
+    if !context.empty?
       context = parse_from_quotes( context )
-      method_regex = "#{context} should #{should}".gsub(/[\+\.\s\'\"\(\)]/,'.')
+      description = should.empty? ? context : "#{context} should #{should}"
+      method_regex = description.gsub(/[\+\.\s\'\"\(\)]/,'.')
 
       runner = Test::Unit::AutoRunner.new(false) do |runner|
         runner.filters << proc{|t| t.method_name.match(method_regex) ? true : false }
       end
 
       runner.run
+
+      puts "Running '#{description}' in file #{@file_path}" unless description.empty?
     end
-    puts "Running '#{context} should #{should}' in file #{@file_path}"
   end
 
   def run_example
