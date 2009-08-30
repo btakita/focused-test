@@ -1,3 +1,8 @@
+0.4.0
+Can now handle shoulda tests/focused tests. Run a focused should
+by specifying a line anywhere inside of the should. Run a focused
+context by specifying the line on which the context starts.
+
 0.2.0
 FocusedTest.run and FocusedTest.new now take a splatted array.
 
