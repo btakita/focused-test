@@ -3,9 +3,11 @@ require "#{File.dirname(__FILE__)}/spec_helper"
 describe FocusedTest do
   describe "#run" do
     context "when passed in file has a test in it" do
+      before { @file = "#{dir}/fixtures/fixture_test.rb" }
+
       context "when passed a --line" do
         it "runs the focused test" do
-          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_test.rb --line 5`
+          output = run_test("-f #{@file} -l 5")
           output.should include("test_1")
           output.should_not include("test_2")
         end
@@ -13,7 +15,7 @@ describe FocusedTest do
 
       context "when not passed a --line" do
         it "runs the entire test" do
-          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_test.rb`
+          output = run_test("-f #{@file}")
           output.should include("test_1")
           output.should include("test_2")
         end
@@ -21,9 +23,11 @@ describe FocusedTest do
     end
 
     context "when passed in file has a shoulda test in it" do
+      before { @file = "#{dir}/fixtures/fixture_shoulda.rb" }
+
       context "when passed a --line" do
         it "runs the focused test" do
-          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_shoulda.rb --line 7`
+          output = run_test("-f #{@file} -l 7")
           output.should include("does something 1")
           output.should_not include("does something 2")
         end  
@@ -31,7 +35,7 @@ describe FocusedTest do
 
       context "when not passed a --line" do
         it "runs the entire test" do
-          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_shoulda.rb`
+          output = run_test("-f #{@file}")
           output.should include("does something 1")
           output.should include("does something 2")
         end
@@ -39,9 +43,11 @@ describe FocusedTest do
     end
 
     context "when passed a filepath that ends with _spec.rb" do
+      before { @file = "#{dir}/fixtures/fixture_spec.rb" }
+
       context "when passed a --line" do
         it "runs the focused spec" do
-          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_spec.rb --line 5`
+          output = run_test("-f #{@file} -l 5")
           output.should include("does something 1")
           output.should_not include("does something 2")
         end
@@ -49,7 +55,7 @@ describe FocusedTest do
 
       context "when not passed a --line" do
         it "runs the entire spec" do
-          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_spec.rb`
+          output = run_test("-f #{@file}")
           output.should include("does something 1")
           output.should include("does something 2")
         end
@@ -58,6 +64,10 @@ describe FocusedTest do
 
     def dir
       File.dirname(__FILE__)
+    end
+
+    def run_test(command_line)
+      `ruby -e "require '#{dir}/../lib/focused_test'; FocusedTest.run('#{command_line.split(/\s/).join(%q[','])}')"`
     end
   end
 end

@@ -129,7 +129,3 @@ class FocusedTest
     name.to_s.gsub(/^(?:.*"(.*)"|.*'(.*)').*$/) { $1 || $2 }
   end
 end
-
-if $0 == __FILE__
-  FocusedTest.run(*ARGV)
-end
