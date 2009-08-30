@@ -18,7 +18,11 @@ class FocusedTest
 
     content = IO.read(@file_path)
     if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
-      run_test content
+      if content =~ /should\s+['"].*['"]\s+do/
+        run_should content
+      else
+        run_test content
+      end
     else
       run_example
     end
@@ -78,9 +82,36 @@ class FocusedTest
     puts "Running '#{current_method}' in file #{@file_path}"
   end
 
+
+  def run_should(content)
+    unless @line_number
+      return run_test(content)
+    end
+
+    require @file_path
+
+    should, context = nil, nil
+
+    lines     = content.split("\n")[0...@line_number].reverse
+    context   = lines.find { |line| line =~ /^\s*context\b/ }
+    should    = parse_from_quotes(lines.find { |line| line =~ /^\s*should\b/ })
+
+    if !context.empty? && !should.empty?
+      context = parse_from_quotes( context )
+      method_regex = "#{context} should #{should}".gsub(/[\+\.\s\'\"\(\)]/,'.')
+
+      runner = Test::Unit::AutoRunner.new(false) do |runner|
+        runner.filters << proc{|t| t.method_name.match(method_regex) ? true : false }
+      end
+
+      runner.run
+    end
+    puts "Running '#{context} should #{should}' in file #{@file_path}"
+  end
+
   def run_example
     cmd = nil
-    ["script/spec", "vendor/plugins/rspec/bin/spec"].each do |spec_file|
+    ["script/spec", "vendor/plugins/rspec/bin/spec", "/usr/bin/spec"].each do |spec_file|
       if File.exists?(spec_file)
         cmd = spec_file
         break
@@ -92,6 +123,10 @@ class FocusedTest
     cmd << ' --backtrace' if @show_backtrace
     cmd << ' --drb' if @drb
     system cmd
+  end
+
+  def parse_from_quotes(name)
+    name.to_s.gsub(/^(?:.*"(.*)"|.*'(.*)').*$/) { $1 || $2 }
   end
 end
 

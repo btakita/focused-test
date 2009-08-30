@@ -20,6 +20,24 @@ describe FocusedTest do
       end
     end
 
+    context "when passed in file has a shoulda test in it" do
+      context "when passed a --line" do
+        it "runs the focused test" do
+          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_shoulda.rb --line 7`
+          output.should include("does something 1")
+          output.should_not include("does something 2")
+        end  
+      end
+
+      context "when not passed a --line" do
+        it "runs the entire test" do
+          output = `ruby #{dir}/../lib/focused_test.rb --file #{dir}/fixtures/fixture_shoulda.rb`
+          output.should include("does something 1")
+          output.should include("does something 2")
+        end
+      end
+    end
+
     context "when passed a filepath that ends with _spec.rb" do
       context "when passed a --line" do
         it "runs the focused spec" do
