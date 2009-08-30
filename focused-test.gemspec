@@ -11,11 +11,11 @@ Gem::Specification.new do |s|
   s.email = %q{brian.takita@gmail.com}
   s.executables = ["focused-test"]
   s.extra_rdoc_files = [
-    "README"
+    "README.markdown"
   ]
   s.files = [
     "CHANGES",
-    "README",
+    "README.markdown",
     "Rakefile",
     "VERSION.yml",
     "bin/focused-test",
