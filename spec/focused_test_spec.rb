@@ -101,6 +101,26 @@ describe FocusedTest do
           output.should include("2 steps (2 passed)")
         end
       end
+      
+      context "format" do
+        context 'when passed "--format progress"' do
+          it 'should use the progress formatter' do
+            output = run_test("-f #{@file} --format progress")
+            output.should_not include("Scenario: Doing something 1")
+            output.should_not include("Scenario: Doing something 2")
+            output.should include(".does something 2")
+          end
+        end
+        
+        context 'when not passed a format' do
+          it 'should default to the pretty formater' do
+            output = run_test("-f #{@file}")
+            output.should include("Scenario: Doing something 1")
+            output.should include("Scenario: Doing something 2")
+            output.should_not include(".does something 2")
+          end
+        end
+      end
     end
     
     def dir

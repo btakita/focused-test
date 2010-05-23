@@ -38,8 +38,10 @@ class FocusedTest
   def parse(args)
     @file_path = nil
     @line_number = nil
+    @format = nil
     @rspec_version = ""
     @show_backtrace = false
+    
     options = OptionParser.new do |o|
       o.on('-f', '--filepath=FILEPATH', String, "File to run test on") do |path|
         @file_path = path
@@ -48,6 +50,7 @@ class FocusedTest
       o.on('-l', '--linenumber=LINENUMBER', Integer, "Line of the test") do |line|
         @line_number = line
       end
+      
       o.on('-r', '--rspec-version=VERSION', String, "Version of Rspec to Run") do |version|
         @rspec_version = "_#{version}_"
       end
@@ -58,6 +61,10 @@ class FocusedTest
 
       o.on('-X', '--drb', String, "Run examples via DRb.") do
         @drb = true
+      end
+      
+      o.on('-F', '--format=FORMAT', String, "Output formatter for cucumber") do |format|
+        @format = format
       end
     end
     options.order(args)
@@ -147,6 +154,8 @@ class FocusedTest
     
     cmd << " #{@file_path}"
     cmd << ":#{@line_number}" if @line_number
+    cmd << " --format #{@format ? @format : 'pretty'}"
+
     system cmd  
   end
 
