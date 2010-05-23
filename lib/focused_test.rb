@@ -20,6 +20,8 @@ class FocusedTest
   def strategy_for_file(file_path)
     if file_path =~ /\.feature/
       return proc { run_feature }
+    elsif file_path =~ /_spec\.rb/
+      return proc { run_example }
     end
     
     content = IO.read(@file_path)
@@ -29,8 +31,6 @@ class FocusedTest
       else
         return proc { run_test content }
       end
-    else
-      return proc { run_example }
     end
   end
 
