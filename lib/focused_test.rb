@@ -18,6 +18,10 @@ class FocusedTest
 
   private
   def strategy_for_file(file_path)
+    if file_path =~ /\.feature/
+      return proc { run_feature }
+    end
+    
     content = IO.read(@file_path)
     if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
       if content =~ /should\s+['"].*['"]\s+do/
@@ -84,7 +88,6 @@ class FocusedTest
     puts "Running '#{current_method}' in file #{@file_path}" unless current_method.nil?
   end
 
-
   def run_should(content)
     unless @line_number
       return run_test(content)
@@ -131,6 +134,20 @@ class FocusedTest
     cmd << ' --backtrace' if @show_backtrace
     cmd << ' --drb' if @drb
     system cmd
+  end
+  
+  def run_feature
+    cmd = nil
+    ["script/cucumber", "/usr/bin/cucumber"].each do |cucumber_executable|
+      if File.exists?(cucumber_executable)
+        cmd = cucumber_executable
+        break
+      end
+    end
+    
+    cmd << " #{@file_path}"
+    cmd << ":#{@line_number}" if @line_number
+    system cmd  
   end
 
   def parse_from_quotes(name)

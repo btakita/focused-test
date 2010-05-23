@@ -76,6 +76,33 @@ describe FocusedTest do
       end
     end
 
+    context "when passed a filepath that ends with .feature" do          
+      before do
+        features_path = File.expand_path("#{dir}/fixtures/features/")
+        @file = "#{features_path}/focused-test.feature"
+      end
+      
+      context "when passed a --line" do
+        it 'runs the focused scenario' do
+          output = run_test("-f #{@file} -l 6") 
+          output.should include("does something 1")
+          output.should_not include("does something 2")
+          output.should include("1 scenario (1 passed)")
+          output.should include("1 step (1 passed)")
+        end
+      end
+      
+      context "when not passed a --line" do
+        it "runs the entire feature file" do
+          output = run_test("-f #{@file}")
+          output.should include("does something 1")
+          output.should include("does something 2")
+          output.should include("2 scenarios (2 passed)")
+          output.should include("2 steps (2 passed)")
+        end
+      end
+    end
+    
     def dir
       File.dirname(__FILE__)
     end
