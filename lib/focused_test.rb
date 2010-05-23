@@ -13,15 +13,20 @@ class FocusedTest
   end
 
   def run
+    strategy_for_file(@file_path).call    
+  end
+
+  private
+  def strategy_for_file(file_path)
     content = IO.read(@file_path)
     if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
       if content =~ /should\s+['"].*['"]\s+do/
-        run_should content
+        return proc { run_should content }
       else
-        run_test content
+        return proc { run_test content }
       end
     else
-      run_example
+      return proc { run_example }
     end
   end
 
