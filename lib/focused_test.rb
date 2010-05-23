@@ -13,9 +13,6 @@ class FocusedTest
   end
 
   def run
-    test_type = nil
-    current_method = nil
-
     content = IO.read(@file_path)
     if content =~ /class .*Test < (.*TestCase|ActionController::IntegrationTest)/
       if content =~ /should\s+['"].*['"]\s+do/
