@@ -74,6 +74,24 @@ describe FocusedTest do
           output.should include("does something 2")
         end
       end
+      
+      context 'format' do
+        context 'when passed "--format specdoc"' do
+          it 'should use the specdoc formatter' do
+            output = run_test("-f #{@file} --format specdoc")
+            output.should include("does something 1\n- does something 1")
+            output.should_not include(".does something 2")
+          end
+        end
+        
+        context 'when not passed a format' do
+          it 'should default to the progress formater' do
+            output = run_test("-f #{@file}")
+            output.should include(".does something 2")
+            output.should_not include("does something 1\n- does something 1")
+          end
+        end
+      end
     end
 
     context "when passed a filepath that ends with .feature" do          

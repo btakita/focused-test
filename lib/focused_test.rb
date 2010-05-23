@@ -63,7 +63,7 @@ class FocusedTest
         @drb = true
       end
       
-      o.on('-F', '--format=FORMAT', String, "Output formatter for cucumber") do |format|
+      o.on('-F', '--format=FORMAT', String, "Output formatter for rspec or cucumber") do |format|
         @format = format
       end
     end
@@ -140,6 +140,7 @@ class FocusedTest
     cmd << " --line #{@line_number}" if @line_number
     cmd << ' --backtrace' if @show_backtrace
     cmd << ' --drb' if @drb
+    cmd << " --format #{@format ? @format : 'progress'}"
     system cmd
   end
   
