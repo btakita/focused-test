@@ -13,14 +13,14 @@ class FocusedTest
   end
 
   def run
-    strategy_for_file(@file_path).call    
+    strategy_for_file.call    
   end
 
   private
-  def strategy_for_file(file_path)
-    if file_path =~ /\.feature/
+  def strategy_for_file
+    if @file_path =~ /\.feature/
       return proc { run_feature }
-    elsif file_path =~ /_spec\.rb/
+    elsif @file_path =~ /_spec\.rb/
       return proc { run_example }
     end
     
