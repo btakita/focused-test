@@ -145,8 +145,8 @@ class FocusedTest
   end
   
   def run_feature
-    cmd = nil
-    ["script/cucumber", "/usr/bin/cucumber"].each do |cucumber_executable|
+    cmd = ""
+    ["script/cucumber", `which cucumber`.strip, "/usr/bin/cucumber"].each do |cucumber_executable|
       if File.exists?(cucumber_executable)
         cmd = cucumber_executable
         break
