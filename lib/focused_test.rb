@@ -20,7 +20,7 @@ class FocusedTest
   def strategy_for_file
     if @file_path =~ /\.feature/
       return proc { run_feature }
-    elsif @file_path =~ /_spec\.rb/
+    elsif @file_path =~ /spec\.rb/
       return proc { run_example }
     end
     
