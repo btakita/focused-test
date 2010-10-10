@@ -66,6 +66,10 @@ class FocusedTest
       o.on('-F', '--format=FORMAT', String, "Output formatter for rspec or cucumber") do |format|
         @format = format
       end
+      
+      o.on('-n', '--no-color', String, "turn off color") do |format|
+        @no_color = true
+      end
     end
     options.order(args)
   end
@@ -140,6 +144,7 @@ class FocusedTest
     cmd << ' --backtrace' if @show_backtrace
     cmd << ' --drb' if @drb
     cmd << " --format #{@format ? @format : 'progress'}"
+    cmd << " --no-color" if @no_color
     system cmd
   end
   
