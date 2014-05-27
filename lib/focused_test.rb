@@ -66,6 +66,10 @@ class FocusedTest
       o.on('-F', '--format=FORMAT', String, "Output formatter for rspec or cucumber") do |format|
         @format = format
       end
+      
+      o.on('-n', '--no-color', String, "turn off color") do |format|
+        @no_color = true
+      end
     end
     options.order(args)
   end
@@ -126,21 +130,21 @@ class FocusedTest
       puts "Running '#{description}' in file #{@file_path}" unless description.empty?
     end
   end
-
+  
   def run_example
-    cmd = nil
-    ["script/spec", "vendor/plugins/rspec/bin/spec", "/usr/bin/spec"].each do |spec_file|
-      if File.exists?(spec_file)
-        cmd = spec_file
-        break
-      end
+    if File.exist?('.rspec')
+      cmd = `which rspec`.strip
+    else
+      cmd = ["script/spec", "vendor/plugins/rspec/bin/spec", "/usr/bin/spec"].find {|script| File.exist?(script) }
     end
+    
     cmd = (RUBY_PLATFORM =~ /[^r]win/) ? "spec.cmd" : "spec" unless cmd
     cmd << "#{@rspec_version} #{@file_path}"
     cmd << " --line #{@line_number}" if @line_number
     cmd << ' --backtrace' if @show_backtrace
     cmd << ' --drb' if @drb
     cmd << " --format #{@format ? @format : 'progress'}"
+    cmd << " --no-color" if @no_color
     system cmd
   end
   
